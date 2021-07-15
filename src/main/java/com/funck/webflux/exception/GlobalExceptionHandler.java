@@ -67,7 +67,7 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
     }
 
     private boolean isTraceEnabled(String query) {
-        return !StringUtils.isEmpty(query) && query.contains("trace");
+        return !StringUtils.isEmpty(query) && query.contains("trace=true");
     }
 
 }
