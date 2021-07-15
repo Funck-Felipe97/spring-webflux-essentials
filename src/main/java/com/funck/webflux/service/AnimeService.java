@@ -3,7 +3,6 @@ package com.funck.webflux.service;
 import com.funck.webflux.domain.Anime;
 import com.funck.webflux.repository.AnimeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -31,11 +30,16 @@ public class AnimeService {
         return animeRepository.save(anime);
     }
 
-    public Mono<Void> update(Anime anime) {
-        return findById(anime.getId())
+    public Mono<Void> update(Anime anime, Integer id) {
+        return findById(id)
                 .map(animeFound -> anime.withId(animeFound.getId()))
                 .flatMap(animeRepository::save)
-                .thenEmpty(Mono.empty());
+                .thenEmpty(Mono.empty()); // ou somente then()
+    }
+
+    public Mono<Void> delete(Integer id) {
+        return findById(id)
+                .flatMap(animeRepository::delete);
     }
 
     private <T> Mono<T> monoNotFoundError() {
