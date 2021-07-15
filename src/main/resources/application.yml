@@ -5,6 +5,6 @@ spring:
     password: root
 
 ## Esconde os logs de erros, para pegar os logs basta passar o parãmetro http://localhost:8080/animes/2?trace=true
-server:
-  error:
-    include-stacktrace: on_param
+##server:
+##  error:
+##    include-stacktrace: on_param
