@@ -3,10 +3,15 @@ package com.funck.webflux.service;
 import com.funck.webflux.domain.Anime;
 import com.funck.webflux.repository.AnimeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -30,6 +35,12 @@ public class AnimeService {
         return animeRepository.save(anime);
     }
 
+    @Transactional
+    public Flux<Anime> saveAll(List<Anime> animes) {
+        return animeRepository.saveAll(animes)
+                .doOnNext(this::throwResponseStatusExceptionWhenEmptyname);
+    }
+
     public Mono<Void> update(Anime anime, Integer id) {
         return findById(id)
                 .map(animeFound -> anime.withId(animeFound.getId()))
@@ -44,6 +55,12 @@ public class AnimeService {
 
     private <T> Mono<T> monoNotFoundError() {
         return Mono.error(new ResponseStatusException(NOT_FOUND, "Anime not found"));
+    }
+
+    private void throwResponseStatusExceptionWhenEmptyname(Anime anime) {
+        if (StringUtils.isEmpty(anime.getName())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid name");
+        }
     }
 
 }
